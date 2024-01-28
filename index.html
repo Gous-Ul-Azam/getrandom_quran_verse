@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Bootstrap 4 with jQuery and Axios</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    @font-face {
+      font-family: 'Uthmanic Hafs';
+      src: url('https://quran.com/fonts/quran/hafs/uthmanic_hafs/UthmanicHafs1Ver18.woff2') format('woff2');
+    }
+
+    body {
+      font-family: 'Uthmanic Hafs', sans-serif;
+    }
+
+    .loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #3498db;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+      display: none; /* Initially hidden */
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container mt-5">
+    <h1>Fetching Data from Quran.com</h1>
+    <div class="loader"></div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card dataHide">
+          <div class="card-header">
+            <h5 id="verse_key" class="card-title mt-3"></h5>
+          </div>
+          <div class="card-body">
+            <div id="arabicDiv" dir="auto"></div>
+            <hr>
+            <div id="englishDiv" dir="auto"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <!-- Bootstrap JS and Popper.js (order is important) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <!-- Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <!-- Your custom scripts or Axios calls can be added here -->
+  <script>
+    function axiosRequest(method, url) {
+      let config = {
+        method: method,
+        maxBodyLength: Infinity,
+        url: url,
+        headers: {
+          'Accept': 'application/json'
+        }
+      };
+
+      return axios(config);
+    }
+
+    $(document).ready(function () {
+      // Show loader before making the Axios request
+      $(".loader").show();
+      $('.dataHide').hide();
+      axiosRequest('get', 'https://api.quran.com/api/v4/verses/random')
+        .then((response) => {
+          let data = response.data;
+          $('#verse_key').html(`Verse Number ${data.verse.verse_key}`);
+          axiosRequest('get', `https://api.quran.com/api/v4/verses/by_key/${data.verse.verse_key}?&fields=text_uthmani&translations=131&word_translation_language=en&words=true`)
+            .then((response) => {
+              let data = response.data;
+              $('#arabicDiv').html(`<p>${data.verse.text_uthmani}</p>`);
+              $('#englishDiv').html(`<p>${data.verse.translations[0].text}</p>`);
+              console.log(data);
+
+              // Hide loader after successfully fetching data
+              $(".loader").hide();
+              $('.dataHide').show();
+            })
+            .catch((error) => {
+              console.log(error);
+
+              // Hide loader in case of an error
+              $(".loader").hide();
+              $('.dataHide').show();
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+
+          // Hide loader in case of an error
+          $(".loader").hide();
+          $('.dataHide').show();
+        });
+    });
+  </script>
+
+</body>
+
+</html>
