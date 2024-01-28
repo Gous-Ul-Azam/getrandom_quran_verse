@@ -52,6 +52,7 @@
             <div id="arabicDiv" dir="auto"></div>
             <hr>
             <div id="englishDiv" dir="auto"></div>
+            <a href="" id="featureLink">Get Full Details in Quran.com</a>
           </div>
         </div>
       </div>
@@ -88,6 +89,8 @@
         .then((response) => {
           let data = response.data;
           $('#verse_key').html(`Verse Number ${data.verse.verse_key}`);
+          let split = data.verse.verse_key.split(":");
+          $('#featureLink').attr('href', `https://quran.com/${split[0]}?startingVerse=${split[1]}`);
           axiosRequest('get', `https://api.quran.com/api/v4/verses/by_key/${data.verse.verse_key}?&fields=text_uthmani&translations=131&word_translation_language=en&words=true`)
             .then((response) => {
               let data = response.data;
