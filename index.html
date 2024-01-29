@@ -52,6 +52,10 @@
             <div id="arabicDiv" dir="auto"></div>
             <hr>
             <div id="englishDiv" dir="auto"></div>
+            <center class="mt-5">
+              <button class="btn btn-primary btn-sm rounded mb-3" onclick="loadData()">Get New Verse</button> 
+            </center>
+            <br>
             <a href="" id="featureLink">Get Full Details in Quran.com</a>
           </div>
         </div>
@@ -81,8 +85,7 @@
       return axios(config);
     }
 
-    $(document).ready(function () {
-      // Show loader before making the Axios request
+    function loadData() {
       $(".loader").show();
       $('.dataHide').hide();
       axiosRequest('get', 'https://api.quran.com/api/v4/verses/random')
@@ -117,6 +120,11 @@
           $(".loader").hide();
           $('.dataHide').show();
         });
+    }
+
+    $(document).ready(function () {
+      // Show loader before making the Axios request
+      loadData();
     });
   </script>
 
